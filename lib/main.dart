@@ -1,55 +1,93 @@
 import 'package:flutter/material.dart';
-import './question.dart';
 
-void main() => runApp(App());
+import './quiz.dart';
+import './result.dart';
+// void main() {
+//   runApp(MyApp());
+// }
 
-class App extends StatefulWidget {
+void main() => runApp(MyApp());
+
+class MyApp extends StatefulWidget {
   @override
-  _AppState createState() => _AppState();
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _MyAppState();
+  }
 }
 
-class _AppState extends State<App> {
-  var index = 0;
-
-  void answer() {
+class _MyAppState extends State<MyApp> {
+  final _questions = const [
+    {
+      'questionText': 'What\'s your favorite color?',
+      'answers': [
+        {'text': 'Black', 'score': 10},
+        {'text': 'Red', 'score': 5},
+        {'text': 'BLue', 'score': 2},
+        {'text': 'White', 'score': 1},
+      ],
+    },
+    {
+      'questionText': 'What\'s your favorite animal?',
+      'answers': [
+        {'text': 'Rabbit', 'score': 10},
+        {'text': 'Snake', 'score': 5},
+        {'text': 'Elephant', 'score': 2},
+        {'text': 'Lion', 'score': 1},
+      ],
+    },
+    {
+      'questionText': 'Who\'s your favorite instructor?',
+      'answers': [
+        {'text': 'Max', 'score': 10},
+        {'text': 'Joe', 'score': 8},
+        {'text': 'Mark', 'score': 5},
+        {'text': 'Jad', 'score': 2},
+      ],
+    },
+  ];
+  var _questionIndex = 0;
+  var _totalScore = 0;
+  void _resetQuiz() {
     setState(() {
-      index += 1;
+      _questionIndex = 0;
+      _totalScore = 0;
     });
+  }
 
-    print(index);
+  void _answerQuestion(int score) {
+    _totalScore += score;
+    setState(() {
+      _questionIndex = _questionIndex + 1;
+    });
+    print(_questionIndex);
+    if (_questionIndex < _questions.length) {
+      print('We have more questions!');
+    } else {
+      print('No more questions!');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    var questions = [
-      'how old are you',
-      'where are you from',
-      'what is your name',
-    ];
+    // var dummy = const ['Hello'];
+    // dummy.add('Max');
+    // print(dummy);
+    // dummy = [];
+    // questions = []; // does not work if questions is a const
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Fisrt Flutter App'),
+          title: Text('My First App'),
         ),
-        body: Column(
-          children: [
-            Question(questions[index]),
-            RaisedButton(
-              child: Text('Click ME'),
-              onPressed: answer,
-            ),
-            RaisedButton(
-              child: Text('Click ME'),
-              onPressed: () => print('hello'),
-            ),
-            RaisedButton(
-              child: Text('Click ME'),
-              onPressed: () {
-                print('1234');
-              },
-            ),
-          ],
-        ),
+        body: _questionIndex < _questions.length
+            ? Quiz(
+                answerQuestion: _answerQuestion,
+                questionIndex: _questionIndex,
+                questions: _questions,
+              )
+            : Result(_totalScore, _resetQuiz),
       ),
     );
   }
